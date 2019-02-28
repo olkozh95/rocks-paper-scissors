@@ -1,3 +1,2 @@
 #MyGame
-
-My app is a simple game of my own
+This app is a simple game of my own
