@@ -1,53 +1,64 @@
-let userScore = 0;
-let compScore = 0;
+const gamePageElems = {
+  userScoreSpan: document.querySelector(".user-score"),
+  compScoreSpan: document.querySelector(".computer-score"),
+  scoreBoard: document.querySelector(".score-board"),
+  resultBox: document.querySelector(".result-content"),
+  rockBox: document.querySelector(".choice-rock"),
+  paperBox: document.querySelector(".choice-paper"),
+  scissorsBox: document.querySelector(".choice-scissors"),
+  endText: document.querySelector(".end-statement"),
+  okButton: document.querySelector(".ok-btn"),
+  cancelButton: document.querySelector(".cancel-btn"),
+  endWindow: document.querySelector(".end-game"),
+  body: document.querySelector("body")
+}
 
-const userScoreSpan = document.querySelector(".user-score");
-const compScoreSpan = document.querySelector(".computer-score");
-const scoreBoard = document.querySelector(".score-board");
-const resultBox = document.querySelector(".result-content");
-const rockBox = document.querySelector(".choice-rock");
-const paperBox = document.querySelector(".choice-paper");
-const scissorsBox = document.querySelector(".choice-scissors");
+const gameController = {
+    userScore: 0,
+    compScore: 0
+}
+    
+gameController.game = function(choice, {resultBox, compScoreSpan, userScoreSpan}    = gamePageElems) {
 
+     let userCount = this.userScore;
+    let compCount = this.compScore;
 
-function game(choice) {
-    let userCount = userScore;
-    let compCount = compScore;
-
-    if(choice === "rock" && getComputerChoice() === "paper") {
+    if(choice === "rock" && this.getComputerChoice() === "paper") {
         resultBox.innerHTML = "Rock is covered by paper. You lost";
-        compScore += 1;
-        compScoreSpan.innerHTML = `${compScore}`;
-    } else if(choice === "rock" && getComputerChoice() === "scissors") {
+        this.compScore += 1;
+        compScoreSpan.innerHTML = `${this.compScore}`;
+    } else if(choice === "rock" && this.getComputerChoice() === "scissors") {
         resultBox.innerHTML = "Rock blunted scissors. You won!";
-        userScore += 1;
-        userScoreSpan.innerHTML = `${userScore}`;
-    } else if(choice === "paper" && getComputerChoice() === "rock") {
+        this.userScore += 1;
+        userScoreSpan.innerHTML = `${this.userScore}`;
+    } else if(choice === "paper" && this.getComputerChoice() === "rock") {
         resultBox.innerHTML = "Paper covers rock. You won!";
-        userScore += 1;
-        userScoreSpan.innerHTML = `${userScore}`;
-    } else if(choice === "scissors" && getComputerChoice() === "rock") {
+        this.userScore += 1;
+        userScoreSpan.innerHTML = `${this.userScore}`;
+    } else if(choice === "scissors" && this.getComputerChoice() === "rock") {
         resultBox.innerHTML = "Scissors is blunted against rock. You lost";
-        compScore += 1;
-        compScoreSpan.innerHTML = `${compScore}`;
-    } else if(choice === "paper" && getComputerChoice() === "scissors") {
+        this.compScore += 1;
+        compScoreSpan.innerHTML = `${this.compScore}`;
+    } else if(choice === "paper" && this.getComputerChoice() === "scissors") {
         resultBox.innerHTML = "Paper is cut up by scissors. You lost";
-        compScore += 1;
-        compScoreSpan.innerHTML = `${compScore}`;
-    } else if(choice === "scissors" && getComputerChoice() === "paper") {
+        this.compScore += 1;
+        compScoreSpan.innerHTML = `${this.compScore}`;
+    } else if(choice === "scissors" && this.getComputerChoice() === "paper") {
         resultBox.innerHTML = "Scissors cuts paper. You won!";
-        userScore += 1;
-        userScoreSpan.innerHTML = `${userScore}`;
+        this.userScore += 1;
+        userScoreSpan.innerHTML = `${this.userScore}`;
     } else {
         resultBox.innerHTML = "Draw!";
     }
 
-    checkCount(userCount, compCount);
-    defineWinner();
+    this.checkCount(userCount, compCount);
+    this.defineWinner();
 }
 
-function checkCount(user, comp) {
-    if(user < userScore) {
+gameController.checkCount = function(user, comp) {
+    const {scoreBoard} = gamePageElems;
+
+    if(user < this.userScore) {
         scoreBoard.style.borderColor = "green";
         scoreBoard.style.backgroundColor = "rgba(0, 255, 0, 0.1)";
 
@@ -55,7 +66,7 @@ function checkCount(user, comp) {
             scoreBoard.style.borderColor = "";
             scoreBoard.style.backgroundColor = "";
         }, 400);
-    } else if(comp < compScore) {
+    } else if(comp < this.compScore) {
         scoreBoard.style.borderColor = "red";
         scoreBoard.style.backgroundColor = "rgba(255, 0, 0, 0.3)";
         
@@ -70,49 +81,51 @@ function checkCount(user, comp) {
     }
 }
 
-function getComputerChoice() {
+gameController.getComputerChoice = function() {
     let ran = Math.floor(Math.random() * 3);
     let choices = ["rock", "paper", "scissors"];
 
     return choices[ran];
 }
 
-function getChoice() {
+gameController.getChoice = function() {
+    const {rockBox, paperBox, scissorsBox} = gamePageElems;
+    
+    let self = this;
+
     rockBox.onclick = function() {
-        game("rock");
+        self.game("rock");
     }
 
     paperBox.onclick = function() {
-        game("paper");
+        self.game("paper");
     }
 
     scissorsBox.onclick = function() {
-        game("scissors");
+        self.game("scissors");
     }
 }
 
-function defineWinner() {
-    if(userScore === 10 ) {
-        endGame("user");
-    } else if(compScore === 10) {
-        endGame("comp");
+gameController.defineWinner = function() {
+    if(this.userScore === 10 ) {
+        this.endGame("user");
+    } else if(this.compScore === 10) {
+        this.endGame("comp");
     }
 }
 
-function endGame(player) {
-    const endText = document.querySelector(".end-statement");
-    const okButton = document.querySelector(".ok-btn");
-    const cancelButton = document.querySelector(".cancel-btn");
-    const endWindow = document.querySelector(".end-game")
+gameController.endGame = function(player) {
+
+    const {endText, okButton, cancelButton, endWindow, userScoreSpan, compScoreSpan, body} = gamePageElems;
 
     if(player === "user") {
         endWindow.style.display = "block";
         endText.style.color = "green";
-        endText.innerHTML = `you won [${userScore} : ${compScore}]`;
+        endText.innerHTML = `you won [${this.userScore} : ${this.compScore}]`;
     } else if(player === "comp") {
         endWindow.style.display = "block";
         endText.style.color = "red";
-        endText.innerHTML = `you lost [${userScore} : ${compScore}]`;
+        endText.innerHTML = `you lost [${this.userScore} : ${this.compScore}]`;
     }
     
     okButton.addEventListener("click", function() {
@@ -125,12 +138,11 @@ function endGame(player) {
 
     cancelButton.addEventListener("click", function() {
         endWindow.style.display = "none";
-        const body = document.querySelector("body");
         body.innerHTML = "Please, reload the page =)";
         body.classList.add("cancel");
     })
 }
 
-getChoice();
+gameController.getChoice();
 
 
